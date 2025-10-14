@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
+
+<!-- Ana Konteyner: Dikey Yerleşim -->
+<VBox spacing="15.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.pusulaiklimlendirme.MusteriServisViewController">
+   <padding>
+      <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+   </padding>
+   <children>
+      <!-- Üst Bölüm: Müşteri Ekleme ve Servis Kaydı Yan Yana (Aynı Kalıyor) -->
+      <HBox spacing="20.0">
+         <children>
+            <!-- 1. Yeni Müşteri Bölümü -->
+            <TitledPane animated="false" collapsible="false" text="Yeni Müşteri">
+               <content>
+                  <GridPane hgap="10.0" vgap="8.0">
+                     <columnConstraints>
+                        <ColumnConstraints halignment="RIGHT" hgrow="NEVER" minWidth="10.0" prefWidth="80.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="250.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="60.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
+                     <children>
+                        <Label text="Ad Soyad:" />
+                        <TextField fx:id="txtMusteriAdSoyad" promptText="Müşteri Adı ve Soyadı" GridPane.columnIndex="1" />
+                        <Label text="Telefon:" GridPane.rowIndex="1" />
+                        <TextField fx:id="txtMusteriTelefon" promptText="Telefon Numarası (Zorunlu)" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                        <Label text="Adres:" GridPane.rowIndex="2" />
+                        <TextArea fx:id="txtMusteriAdres" prefHeight="80.0" prefWidth="200.0" promptText="Müşteri Adresi (İsteğe Bağlı)" wrapText="true" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <Button fx:id="btnMusteriEkle" mnemonicParsing="false" onAction="#handleMusteriEkle" prefHeight="30.0" prefWidth="120.0" text="Müşteri Ekle" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="3" />
+                     </children>
+                     <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </padding>
+                  </GridPane>
+               </content>
+            </TitledPane>
+
+            <!-- 2. Yeni Servis Kaydı Bölümü -->
+            <TitledPane animated="false" collapsible="false" text="Yeni Servis Kaydı" HBox.hgrow="ALWAYS">
+               <content>
+                  <GridPane hgap="10.0" vgap="8.0">
+                     <columnConstraints>
+                        <ColumnConstraints halignment="RIGHT" hgrow="NEVER" minWidth="10.0" prefWidth="90.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="200.0" />
+                        <ColumnConstraints halignment="RIGHT" hgrow="NEVER" minWidth="10.0" prefWidth="90.0" />
+                        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="200.0" />
+                     </columnConstraints>
+                     <rowConstraints>
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+                        <RowConstraints minHeight="10.0" prefHeight="40.0" vgrow="SOMETIMES" />
+                     </rowConstraints>
+                     <children>
+                        <Label text="Müşteri Ara:" GridPane.rowIndex="0" GridPane.columnIndex="0" />
+                        <TextField fx:id="txtMusteriAra" promptText="Ada veya Telefona Göre Ara..." GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="0" />
+                        <Label text="Müşteri:" GridPane.rowIndex="1" GridPane.columnIndex="0" />
+                        <ComboBox fx:id="cmbServisMusteri" prefWidth="400.0" promptText="Müşteriyi Seçin veya Yukarıdan Arayın" GridPane.columnIndex="1" GridPane.columnSpan="3" GridPane.rowIndex="1" />
+                        <Label text="Tarih:" GridPane.rowIndex="2" />
+                        <DatePicker fx:id="dateServisTarih" editable="false" promptText="Servis Tarihini Seçin" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+                        <Label text="İşlem:" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                        <TextField fx:id="txtServisIslem" promptText="Yapılan İşlem Açıklaması" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+                        <Label text="Parça:" GridPane.rowIndex="3" />
+                        <ComboBox fx:id="cmbServisParca" prefWidth="220.0" promptText="Kullanılan Parçayı Seçin (İsteğe Bağlı)" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                        <Label text="Adet:" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+                        <TextField fx:id="txtServisAdet" prefWidth="80.0" promptText="Adet" GridPane.columnIndex="3" GridPane.rowIndex="3" />
+                        <Label text="İşçilik (₺):" GridPane.rowIndex="4" />
+                        <TextField fx:id="txtServisIscilik" promptText="0.00" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                        <Label text="Ödeme Tutarı (₺):" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+                        <TextField fx:id="txtServisOdeme" promptText="0.00" GridPane.columnIndex="3" GridPane.rowIndex="4" />
+                        <Button fx:id="btnServisKaydet" mnemonicParsing="false" onAction="#handleServisKaydet" prefHeight="30.0" prefWidth="150.0" text="Servis Kaydını Oluştur" GridPane.columnSpan="4" GridPane.halignment="CENTER" GridPane.rowIndex="5" />
+                     </children>
+                     <padding>
+                        <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />
+                     </padding>
+                  </GridPane>
+               </content>
+            </TitledPane>
+         </children>
+      </HBox>
+
+      <!-- Orta Bölüm: Müşteri Listesi (Aynı Kalıyor) -->
+      <TitledPane animated="false" collapsible="false" text="Kayıtlı Müşteriler">
+          <content>
+              <VBox spacing="10.0">
+                  <children>
+                      <TableView fx:id="tblMusteriler" prefHeight="200.0" VBox.vgrow="SOMETIMES">
+                          <columns>
+                              <TableColumn fx:id="colMusteriId" prefWidth="50.0" text="ID" />
+                              <TableColumn fx:id="colMusteriAdSoyad" prefWidth="250.0" text="Ad Soyad" />
+                              <TableColumn fx:id="colMusteriTelefon" prefWidth="150.0" text="Telefon" />
+                              <TableColumn fx:id="colMusteriAdres" prefWidth="400.0" text="Adres" />
+                          </columns>
+                           <columnResizePolicy>
+                              <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                           </columnResizePolicy>
+                      </TableView>
+                      <HBox alignment="CENTER_RIGHT" spacing="10.0">
+                          <children>
+                              <Button fx:id="btnMusteriDuzenle" disable="true" mnemonicParsing="false" onAction="#handleMusteriDuzenle" text="Seçili Müşteriyi Düzenle" />
+                              <Button fx:id="btnMusteriSil" disable="true" mnemonicParsing="false" onAction="#handleMusteriSil" text="Seçili Müşteriyi Sil" />
+                          </children>
+                          <padding>
+                              <Insets top="5.0" />
+                          </padding>
+                      </HBox>
+                  </children>
+              </VBox>
+          </content>
+           <VBox.margin>
+              <Insets top="10.0" />
+           </VBox.margin>
+      </TitledPane>
+
+
+      <!-- Alt Bölüm: Servis Kayıtları Listesi (GÜNCELLENDİ) -->
+      <TitledPane animated="false" collapsible="false" text="Geçmiş Servis Kayıtları" VBox.vgrow="ALWAYS">
+         <content>
+             <!-- İçeriği VBox içine alalım (Arama kutusu + Tablo) -->
+            <VBox spacing="10.0">
+               <children>
+                   <!-- YENİ EKLENEN ARAMA KUTUSU -->
+                  <HBox alignment="CENTER_LEFT">
+                     <children>
+                        <Label text="Servis Kayıtlarında Ara:" />
+                        <TextField fx:id="txtServisKaydiAra" promptText="Müşteri, İşlem veya Parça Adına Göre Ara..." HBox.hgrow="ALWAYS">
+                           <HBox.margin>
+                              <Insets left="10.0" />
+                           </HBox.margin>
+                        </TextField>
+                     </children>
+                  </HBox>
+
+                   <!-- Mevcut Servis Tablosu -->
+                  <TableView fx:id="tblServisKayitlari" prefHeight="300.0" VBox.vgrow="ALWAYS"> <!-- prefWidth kaldırıldı -->
+                    <columns>
+                      <TableColumn fx:id="colServisId" prefWidth="50.0" text="ID" />
+                      <TableColumn fx:id="colServisMusteri" prefWidth="200.0" text="Müşteri" />
+                      <TableColumn fx:id="colServisTarih" prefWidth="100.0" text="Tarih" />
+                      <TableColumn fx:id="colServisIslem" prefWidth="300.0" text="İşlem" />
+                      <TableColumn fx:id="colServisParca" prefWidth="200.0" text="Kullanılan Parça" />
+                      <TableColumn fx:id="colServisAdet" prefWidth="50.0" style="-fx-alignment: CENTER;" text="Adet" />
+                      <TableColumn fx:id="colServisIscilik" prefWidth="100.0" style="-fx-alignment: CENTER-RIGHT;" text="İşçilik (₺)" />
+                      <TableColumn fx:id="colServisOdeme" prefWidth="110.0" style="-fx-alignment: CENTER-RIGHT;" text="Ödeme (₺)" />
+                      <TableColumn fx:id="colServisKar" prefWidth="100.0" style="-fx-alignment: CENTER-RIGHT;" text="Kar (₺)" />
+                    </columns>
+                     <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                     </columnResizePolicy>
+                  </TableView>
+               </children>
+            </VBox>
+         </content>
+           <VBox.margin>
+              <Insets top="10.0" />
+           </VBox.margin>
+      </TitledPane>
+   </children>
+</VBox>
