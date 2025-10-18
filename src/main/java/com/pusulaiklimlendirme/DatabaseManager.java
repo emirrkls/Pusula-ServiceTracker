@@ -88,8 +88,8 @@ public class DatabaseManager {
                    UNIQUE(marka_id, ad),
                    FOREIGN KEY(marka_id) REFERENCES markalar(id) ON DELETE CASCADE
                )""";
-       String sqlTipler = """
-               CREATE TABLE IF NOT EXISTS tipler (
+       String sqlCihazTurleri = """
+               CREATE TABLE IF NOT EXISTS cihaz_turleri (
                    id INTEGER PRIMARY KEY AUTOINCREMENT,
                    ad TEXT UNIQUE NOT NULL
                )""";
@@ -106,12 +106,12 @@ public class DatabaseManager {
                    ad TEXT NOT NULL,
                    marka_id INTEGER NOT NULL,
                    model_id INTEGER NOT NULL,
-                   tip_id INTEGER NOT NULL,
+                   cihaz_turu_id INTEGER NOT NULL,
                    alis_fiyat REAL NOT NULL,
                    satis_fiyat REAL NOT NULL,
                    FOREIGN KEY(marka_id) REFERENCES markalar(id) ON DELETE RESTRICT,
                    FOREIGN KEY(model_id) REFERENCES modeller(id) ON DELETE RESTRICT,
-                   FOREIGN KEY(tip_id) REFERENCES tipler(id) ON DELETE RESTRICT
+                   FOREIGN KEY(cihaz_turu_id) REFERENCES cihaz_turleri(id) ON DELETE RESTRICT
                )""";
        String sqlStokHareketleri = """
                CREATE TABLE IF NOT EXISTS stok_hareketleri (
@@ -140,7 +140,7 @@ public class DatabaseManager {
        System.out.println("Tablo oluşturma/kontrol işlemi başlıyor...");
        try (Statement stmt = conn.createStatement()) {
            stmt.execute(sqlMarkalar);
-           stmt.execute(sqlTipler);
+           stmt.execute(sqlCihazTurleri);
            stmt.execute(sqlModeller);
            stmt.execute(sqlMusteriler);
            stmt.execute(sqlParcalar);

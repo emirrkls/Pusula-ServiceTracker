@@ -12,16 +12,16 @@ import java.util.List;
  * Tip nesneleri için Veritabanı Erişim Nesnesi (DAO).
  * Tipler tablosu üzerinde CRUD işlemleri yapar.
  */
-public class TipDAO {
+public class CihazTuruDAO {
 
     /**
      * Veritabanındaki tüm tipleri isim sırasına göre listeler.
      *
      * @return Tip nesnelerinin bir listesi. Hata durumunda veya tip yoksa boş liste döner.
      */
-    public List<Tip> getAllTipler() {
-        List<Tip> tipler = new ArrayList<>();
-        String sql = "SELECT id, ad FROM tipler ORDER BY ad ASC";
+    public List<CihazTuru> getAllCihazTurleri() {
+        List<CihazTuru> cihazTurleri = new ArrayList<>();
+        String sql = "SELECT id, ad FROM cihaz_turleri ORDER BY ad ASC";
 
         try (Connection conn = DatabaseManager.getConnection();
              Statement stmt = conn.createStatement();
@@ -30,41 +30,41 @@ public class TipDAO {
             while (rs.next()) {
                 int id = rs.getInt("id");
                 String ad = rs.getString("ad");
-                tipler.add(new Tip(id, ad));
+                cihazTurleri.add(new CihazTuru(id, ad));
             }
         } catch (SQLException e) {
-            System.err.println("Tipleri alırken veritabanı hatası: " + e.getMessage());
+            System.err.println("Cihaz türleri alınırken veritabanı hatası: " + e.getMessage());
         }
-        return tipler;
+        return cihazTurleri;
     }
 
     /**
      * Veritabanına yeni bir tip ekler.
      *
-     * @param tipAdi Eklenecek tipin adı. Boş veya null olmamalıdır.
+     * @param cihazTuruAdi Eklenecek tipin adı. Boş veya null olmamalıdır.
      * @return Ekleme başarılı ise true, değilse false döner.
      */
-    public boolean addTip(String tipAdi) {
-        if (tipAdi == null || tipAdi.trim().isEmpty()) {
-            System.err.println("Tip adı boş olamaz.");
+    public boolean addCihazTuru(String cihazTuruAdi) {
+        if (cihazTuruAdi == null || cihazTuruAdi.trim().isEmpty()) {
+            System.err.println("Cihaz Türü adı boş olamaz.");
             return false;
         }
 
-        String sql = "INSERT INTO tipler(ad) VALUES(?)";
+        String sql = "INSERT INTO cihaz_turleri(ad) VALUES(?)";
 
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, tipAdi.trim());
+            pstmt.setString(1, cihazTuruAdi.trim());
 
             int affectedRows = pstmt.executeUpdate();
             return affectedRows > 0;
 
         } catch (SQLException e) {
             if (e.getMessage().contains("UNIQUE constraint failed")) {
-                System.err.println("Hata: Bu tip zaten mevcut! (" + tipAdi + ")");
+                System.err.println("Hata: Bu cihaz türü zaten mevcut! (" + cihazTuruAdi + ")");
             } else {
-                System.err.println("Tip eklerken veritabanı hatası: " + e.getMessage());
+                System.err.println("Cihaz türü eklerken veritabanı hatası: " + e.getMessage());
             }
             return false;
         }
@@ -74,27 +74,27 @@ public class TipDAO {
      * Verilen isme sahip tipin ID'sini döndürür.
      * Parça eklerken tip ID'sini bulmak için kullanışlıdır.
      *
-     * @param tipAdi Aranacak tipin adı.
+     * @param cihazTuruAdi Aranacak tipin adı.
      * @return Tip bulunursa ID'sini, bulunamazsa veya hata olursa -1 döner.
      */
-    public int getTipIdByName(String tipAdi) {
-        String sql = "SELECT id FROM tipler WHERE ad = ?";
-        int tipId = -1;
+    public int getCihazTuruIdByName(String cihazTuruAdi) {
+        String sql = "SELECT id FROM cihaz_turleri WHERE ad = ?";
+        int CihazTuruId = -1;
 
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement pstmt = conn.prepareStatement(sql)) {
 
-            pstmt.setString(1, tipAdi);
+            pstmt.setString(1, cihazTuruAdi);
 
             try (ResultSet rs = pstmt.executeQuery()) {
                 if (rs.next()) {
-                    tipId = rs.getInt("id");
+                    CihazTuruId = rs.getInt("id");
                 }
             }
         } catch (SQLException e) {
-            System.err.println("Tip ID alınırken hata: " + e.getMessage());
+            System.err.println("Cihaz Türü ID alınırken hata: " + e.getMessage());
         }
-        return tipId;
+        return CihazTuruId;
     }
 
     // TipDAO.java içine eklenecek metotlar
@@ -106,16 +106,16 @@ public class TipDAO {
  * @param yeniAd Tipin yeni adı. Boş veya null olmamalıdır.
  * @return Güncelleme başarılı ise true, değilse false döner.
  */
-public boolean updateTip(int id, String yeniAd) {
+public boolean updateCihazTuru(int id, String yeniAd) {
     if (yeniAd == null || yeniAd.trim().isEmpty()) {
-        System.err.println("Yeni tip adı boş olamaz.");
+        System.err.println("Yeni cihaz türü adı boş olamaz.");
         return false;
     }
      if (id <= 0) {
-        System.err.println("Geçersiz tip ID.");
+        System.err.println("Geçersiz cihaz türü ID.");
         return false;
     }
-    String sql = "UPDATE tipler SET ad = ? WHERE id = ?";
+    String sql = "UPDATE cihaz_turleri SET ad = ? WHERE id = ?";
 
     try (Connection conn = DatabaseManager.getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -127,9 +127,9 @@ public boolean updateTip(int id, String yeniAd) {
 
     } catch (SQLException e) {
          if (e.getMessage().contains("UNIQUE constraint failed")) {
-            System.err.println("Hata: Bu tip adı zaten başka bir kayıtta mevcut! (" + yeniAd + ")");
+            System.err.println("Hata: Bu Cihaz adı zaten başka bir kayıtta mevcut! (" + yeniAd + ")");
         } else {
-            System.err.println("Tip güncellenirken veritabanı hatası: " + e.getMessage());
+            System.err.println("Cihaz türü güncellenirken veritabanı hatası: " + e.getMessage());
         }
         return false;
     }
@@ -143,12 +143,12 @@ public boolean updateTip(int id, String yeniAd) {
  * @param id Silinecek tipin ID'si.
  * @return Silme başarılı ise true, değilse false döner.
  */
-public boolean deleteTip(int id) {
+public boolean deleteCihazTuru(int id) {
      if (id <= 0) {
-        System.err.println("Geçersiz tip ID.");
+        System.err.println("Geçersiz Cihaz Türü ID.");
         return false;
     }
-    String sql = "DELETE FROM tipler WHERE id = ?";
+    String sql = "DELETE FROM cihaz_turleri WHERE id = ?";
 
     try (Connection conn = DatabaseManager.getConnection();
          PreparedStatement pstmt = conn.prepareStatement(sql)) {
@@ -160,9 +160,9 @@ public boolean deleteTip(int id) {
     } catch (SQLException e) {
          if (e.getMessage().contains("FOREIGN KEY constraint failed")) {
              // Parcalar tablosunda ON DELETE RESTRICT vardı.
-             System.err.println("Hata: Bu tip, başka kayıtlar (parçalar) tarafından kullanıldığı için silinemiyor. ID: " + id);
+             System.err.println("Hata: Bu Cihaz Türü, başka kayıtlar (parçalar) tarafından kullanıldığı için silinemiyor. ID: " + id);
          } else {
-            System.err.println("Tip silinirken veritabanı hatası: " + e.getMessage());
+            System.err.println("Cihaz Türü silinirken veritabanı hatası: " + e.getMessage());
          }
         return false;
     }

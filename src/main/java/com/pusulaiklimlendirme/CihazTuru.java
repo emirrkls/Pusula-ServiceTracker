@@ -1,12 +1,12 @@
-package com.pusulaiklimlendirme; // veya com.pusulaiklimlendirme.model
+package com.pusulaiklimlendirme;
 
-public class Tip {
+public class CihazTuru {
     private int id;
     private String ad;
 
-    public Tip() {}
+    public CihazTuru() {}
 
-    public Tip(int id, String ad) {
+    public CihazTuru(int id, String ad) {
         this.id = id;
         this.ad = ad;
     }

@@ -5,7 +5,7 @@ import com.pusulaiklimlendirme.Marka;
 import com.pusulaiklimlendirme.Model;
 import com.pusulaiklimlendirme.Parca;
 import com.pusulaiklimlendirme.StokGorunum;
-import com.pusulaiklimlendirme.Tip;
+import com.pusulaiklimlendirme.CihazTuru;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -30,7 +30,7 @@ public class StokViewController {
     @FXML private TextField txtParcaAdi;
     @FXML private ComboBox<Marka> cmbParcaMarka;
     @FXML private ComboBox<Model> cmbParcaModel;
-    @FXML private ComboBox<Tip> cmbParcaTip;
+    @FXML private ComboBox<CihazTuru> cmbParcaTip;
     @FXML private TextField txtParcaAlisFiyat;
     @FXML private TextField txtParcaSatisFiyat;
     @FXML private Button btnParcaEkle;
@@ -53,7 +53,7 @@ public class StokViewController {
     // --- DAO Nesneleri ---
     private final MarkaDAO markaDAO = new MarkaDAO();
     private final ModelDAO modelDAO = new ModelDAO();
-    private final TipDAO tipDAO = new TipDAO();
+    private final CihazTuruDAO cihazTuruDAO = new CihazTuruDAO();
     private final ParcaDAO parcaDAO = new ParcaDAO();
     private final StokHareketDAO stokHareketDAO = new StokHareketDAO();
 
@@ -61,7 +61,7 @@ public class StokViewController {
     private ObservableList<StokGorunum> stokGorunumObservableList = FXCollections.observableArrayList();
     private ObservableList<Marka> markaComboList = FXCollections.observableArrayList();
     private ObservableList<Model> modelComboList = FXCollections.observableArrayList();
-    private ObservableList<Tip> tipComboList = FXCollections.observableArrayList();
+    private ObservableList<CihazTuru> tipComboList = FXCollections.observableArrayList();
     private ObservableList<Parca> parcaStokComboList = FXCollections.observableArrayList();
 
     // Para formatlama için
@@ -104,7 +104,7 @@ public class StokViewController {
         String parcaAdi = txtParcaAdi.getText();
         Marka marka = cmbParcaMarka.getValue();
         Model model = cmbParcaModel.getValue();
-        Tip tip = cmbParcaTip.getValue();
+        CihazTuru tip = cmbParcaTip.getValue();
         String alisFiyatStr = txtParcaAlisFiyat.getText();
         String satisFiyatStr = txtParcaSatisFiyat.getText();
 
@@ -254,8 +254,8 @@ public class StokViewController {
     }
 
     private void loadParcaTipCombo() {
-        Tip secili = cmbParcaTip.getValue();
-        tipComboList.setAll(tipDAO.getAllTipler());
+        CihazTuru secili = cmbParcaTip.getValue();
+        tipComboList.setAll(cihazTuruDAO.getAllCihazTurleri());
         cmbParcaTip.setValue(tipComboList.stream().filter(t -> t.getId() == (secili != null ? secili.getId() : -1)).findFirst().orElse(null));
     }
 
@@ -416,12 +416,12 @@ public class StokViewController {
      public void refreshData() {
          System.out.println("StokView verileri yenileniyor...");
          Marka seciliMarkaCombo = cmbParcaMarka.getValue();
-         Tip seciliTipCombo = cmbParcaTip.getValue();
+         CihazTuru seciliTipCombo = cmbParcaTip.getValue();
          Parca seciliStokParcaCombo = cmbStokParcaSec.getValue();
          StokGorunum seciliStokTable = tblStokDurumu.getSelectionModel().getSelectedItem();
 
          markaComboList.setAll(markaDAO.getAllMarkalar());
-         tipComboList.setAll(tipDAO.getAllTipler());
+         tipComboList.setAll(cihazTuruDAO.getAllCihazTurleri());
          parcaStokComboList.setAll(parcaDAO.getAllParcalar());
          stokGorunumObservableList.setAll(parcaDAO.getStokGorunumListesi());
 

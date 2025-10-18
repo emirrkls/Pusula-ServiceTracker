@@ -17,7 +17,7 @@ public class ParcaDAO {
     // Diğer DAO'lara erişim (doğrudan new ile)
     private final MarkaDAO markaDAO = new MarkaDAO();
     private final ModelDAO modelDAO = new ModelDAO();
-    private final TipDAO tipDAO = new TipDAO();
+    private final CihazTuruDAO cihazTuruDAO = new CihazTuruDAO();
 
     // --- Mevcut Metotlar (addParca, getAllParcalar, getParcaById, vb.) ---
 
@@ -32,12 +32,12 @@ public class ParcaDAO {
      * @param satisFiyat Parçanın satış fiyatı.
      * @return Ekleme başarılı ise true, değilse false döner.
      */
-    public boolean addParca(String ad, String markaAdi, String modelAdi, String tipAdi, double alisFiyat, double satisFiyat) {
+    public boolean addParca(String ad, String markaAdi, String modelAdi, String cihazTuruAdi, double alisFiyat, double satisFiyat) {
         // Girdi kontrolleri
         if (ad == null || ad.trim().isEmpty() ||
             markaAdi == null || markaAdi.trim().isEmpty() ||
             modelAdi == null || modelAdi.trim().isEmpty() ||
-            tipAdi == null || tipAdi.trim().isEmpty()) {
+            cihazTuruAdi == null || cihazTuruAdi.trim().isEmpty()) {
             System.err.println("Parça adı, marka, model ve tip boş olamaz.");
             return false;
         }
@@ -57,9 +57,9 @@ public class ParcaDAO {
             System.err.println("Parça eklenemedi. Model bulunamadı: " + modelAdi + " (Marka: " + markaAdi + ")");
             return false;
         }
-        int tipId = tipDAO.getTipIdByName(tipAdi);
-        if (tipId == -1) {
-            System.err.println("Parça eklenemedi. Tip bulunamadı: " + tipAdi);
+        int cihazTuruId = cihazTuruDAO.getCihazTuruIdByName(cihazTuruAdi);
+        if (cihazTuruId == -1) {
+            System.err.println("Parça eklenemedi. Cihaz Türü bulunamadı: " + cihazTuruAdi);
             return false;
         }
 
@@ -72,7 +72,7 @@ public class ParcaDAO {
             pstmt.setString(1, ad.trim());
             pstmt.setInt(2, markaId);
             pstmt.setInt(3, modelId);
-            pstmt.setInt(4, tipId);
+            pstmt.setInt(4, cihazTuruId);
             pstmt.setDouble(5, alisFiyat);
             pstmt.setDouble(6, satisFiyat);
 

@@ -2,20 +2,20 @@ package com.pusulaiklimlendirme;
 
 import com.pusulaiklimlendirme.Marka;
 import com.pusulaiklimlendirme.Model;
-import com.pusulaiklimlendirme.Tip;
+import com.pusulaiklimlendirme.CihazTuru;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.MouseButton; // For double click
+import javafx.scene.input.MouseButton;
 
-import java.util.List;
 import java.util.Optional;
 
 public class KategoriViewController {
 
+    // --- FXML Fields: Marka ---
     @FXML private TableView<Marka> tblMarkalar;
     @FXML private TableColumn<Marka, Integer> colMarkaId;
     @FXML private TableColumn<Marka, String> colMarkaAd;
@@ -23,6 +23,7 @@ public class KategoriViewController {
     @FXML private Button btnMarkaDuzenle;
     @FXML private Button btnMarkaSil;
 
+    // --- FXML Fields: Model ---
     @FXML private ComboBox<Marka> cmbModelMarkaFilter;
     @FXML private TableView<Model> tblModeller;
     @FXML private TableColumn<Model, Integer> colModelId;
@@ -32,61 +33,66 @@ public class KategoriViewController {
     @FXML private Button btnModelDuzenle;
     @FXML private Button btnModelSil;
 
-    @FXML private TableView<Tip> tblTipler;
-    @FXML private TableColumn<Tip, Integer> colTipId;
-    @FXML private TableColumn<Tip, String> colTipAd;
-    @FXML private Button btnTipYeni;
-    @FXML private Button btnTipDuzenle;
-    @FXML private Button btnTipSil;
+    // --- FXML Fields: Cihaz Türü ---
+    @FXML private TableView<CihazTuru> tblCihazTurleri;
+    @FXML private TableColumn<CihazTuru, Integer> colCihazTuruId;
+    @FXML private TableColumn<CihazTuru, String> colCihazTuruAd;
+    @FXML private Button btnCihazTuruYeni;
+    @FXML private Button btnCihazTuruDuzenle;
+    @FXML private Button btnCihazTuruSil;
 
+    // --- DAO Objects ---
     private final MarkaDAO markaDAO = new MarkaDAO();
     private final ModelDAO modelDAO = new ModelDAO();
-    private final TipDAO tipDAO = new TipDAO();
+    private final CihazTuruDAO cihazTuruDAO = new CihazTuruDAO();
 
+    // --- Observable Lists ---
     private ObservableList<Marka> markaList = FXCollections.observableArrayList();
     private ObservableList<Model> modelList = FXCollections.observableArrayList();
-    private ObservableList<Tip> tipList = FXCollections.observableArrayList();
+    private ObservableList<CihazTuru> cihazTuruList = FXCollections.observableArrayList();
 
     @FXML
     private void initialize() {
-        System.out.println("KategoriViewController başlatıldı (Model Filtre ve Refresh ile)!");
-
+        System.out.println("KategoriViewController initialized.");
+        
         configureTableColumns();
-
+        
         tblMarkalar.setItems(markaList);
         tblModeller.setItems(modelList);
-        tblTipler.setItems(tipList);
+        tblCihazTurleri.setItems(cihazTuruList);
         cmbModelMarkaFilter.setItems(markaList);
-
+        
         refreshData();
-
+        
         addSelectionListeners();
         addDoubleClickListeners();
         addMarkaFilterListener();
-
+        
         updateButtonStates();
     }
 
-
     private void configureTableColumns() {
+        // Marka Table
         colMarkaId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colMarkaAd.setCellValueFactory(new PropertyValueFactory<>("ad"));
 
+        // Model Table
         colModelId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colModelMarkaId.setCellValueFactory(new PropertyValueFactory<>("markaId"));
         colModelAd.setCellValueFactory(new PropertyValueFactory<>("ad"));
 
-        colTipId.setCellValueFactory(new PropertyValueFactory<>("id"));
-        colTipAd.setCellValueFactory(new PropertyValueFactory<>("ad"));
+        // Cihaz Türü Table
+        colCihazTuruId.setCellValueFactory(new PropertyValueFactory<>("id"));
+        colCihazTuruAd.setCellValueFactory(new PropertyValueFactory<>("ad"));
     }
 
     private void addSelectionListeners() {
         tblMarkalar.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> updateButtonStates());
         tblModeller.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> updateButtonStates());
-        tblTipler.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> updateButtonStates());
+        tblCihazTurleri.getSelectionModel().selectedItemProperty().addListener((obs, oldSelection, newSelection) -> updateButtonStates());
     }
 
-     private void addDoubleClickListeners() {
+    private void addDoubleClickListeners() {
         tblMarkalar.setOnMouseClicked(event -> {
             if (event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2 && tblMarkalar.getSelectionModel().getSelectedItem() != null) {
                 handleMarkaDuzenle();
@@ -97,9 +103,9 @@ public class KategoriViewController {
                 handleModelDuzenle();
             }
         });
-         tblTipler.setOnMouseClicked(event -> {
-            if (event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2 && tblTipler.getSelectionModel().getSelectedItem() != null) {
-                handleTipDuzenle();
+        tblCihazTurleri.setOnMouseClicked(event -> {
+            if (event.getButton().equals(MouseButton.PRIMARY) && event.getClickCount() == 2 && tblCihazTurleri.getSelectionModel().getSelectedItem() != null) {
+                handleCihazTuruDuzenle();
             }
         });
     }
@@ -113,35 +119,30 @@ public class KategoriViewController {
 
     private void updateButtonStates() {
         boolean markaSecili = tblMarkalar.getSelectionModel().getSelectedItem() != null;
-        boolean filtreSecili = cmbModelMarkaFilter.getValue() != null;
         btnMarkaDuzenle.setDisable(!markaSecili);
         btnMarkaSil.setDisable(!markaSecili);
-        btnModelYeni.setDisable(!filtreSecili && !markaSecili);
 
         boolean modelSecili = tblModeller.getSelectionModel().getSelectedItem() != null;
         btnModelDuzenle.setDisable(!modelSecili);
         btnModelSil.setDisable(!modelSecili);
+        
+        boolean markaFiltreSecili = cmbModelMarkaFilter.getValue() != null;
+        btnModelYeni.setDisable(!markaFiltreSecili && !markaSecili);
 
-        boolean tipSecili = tblTipler.getSelectionModel().getSelectedItem() != null;
-        btnTipDuzenle.setDisable(!tipSecili);
-        btnTipSil.setDisable(!tipSecili);
+        boolean cihazTuruSecili = tblCihazTurleri.getSelectionModel().getSelectedItem() != null;
+        btnCihazTuruDuzenle.setDisable(!cihazTuruSecili);
+        btnCihazTuruSil.setDisable(!cihazTuruSecili);
     }
-
 
     private void loadMarkaTable() {
         Marka seciliFiltre = cmbModelMarkaFilter.getValue();
         Marka seciliTablo = tblMarkalar.getSelectionModel().getSelectedItem();
-
         markaList.setAll(markaDAO.getAllMarkalar());
-
         if (seciliFiltre != null) {
-             cmbModelMarkaFilter.setValue(markaList.stream().filter(m -> m.getId() == seciliFiltre.getId()).findFirst().orElse(null));
+            cmbModelMarkaFilter.setValue(markaList.stream().filter(m -> m.getId() == seciliFiltre.getId()).findFirst().orElse(null));
         }
         if (seciliTablo != null) {
-             tblMarkalar.getSelectionModel().select(markaList.stream().filter(m -> m.getId() == seciliTablo.getId()).findFirst().orElse(null));
-        }
-        if (tblMarkalar.getSelectionModel().getSelectedItem() == null) {
-            tblMarkalar.getSelectionModel().clearSelection();
+            tblMarkalar.getSelectionModel().select(markaList.stream().filter(m -> m.getId() == seciliTablo.getId()).findFirst().orElse(null));
         }
     }
 
@@ -152,24 +153,17 @@ public class KategoriViewController {
             modelList.setAll(modelDAO.getModellerByMarkaId(markaId));
         }
         if (seciliModel != null) {
-             tblModeller.getSelectionModel().select(modelList.stream().filter(m -> m.getId() == seciliModel.getId()).findFirst().orElse(null));
-        }
-        if (tblModeller.getSelectionModel().getSelectedItem() == null) {
-            tblModeller.getSelectionModel().clearSelection();
+            tblModeller.getSelectionModel().select(modelList.stream().filter(m -> m.getId() == seciliModel.getId()).findFirst().orElse(null));
         }
     }
 
-     private void loadTipTable() {
-        Tip seciliTip = tblTipler.getSelectionModel().getSelectedItem();
-        tipList.setAll(tipDAO.getAllTipler());
-         if (seciliTip != null) {
-             tblTipler.getSelectionModel().select(tipList.stream().filter(t -> t.getId() == seciliTip.getId()).findFirst().orElse(null));
-         }
-        if (tblTipler.getSelectionModel().getSelectedItem() == null) {
-             tblTipler.getSelectionModel().clearSelection();
+    private void loadCihazTuruTable() {
+        CihazTuru seciliCihazTuru = tblCihazTurleri.getSelectionModel().getSelectedItem();
+        cihazTuruList.setAll(cihazTuruDAO.getAllCihazTurleri());
+        if (seciliCihazTuru != null) {
+            tblCihazTurleri.getSelectionModel().select(cihazTuruList.stream().filter(t -> t.getId() == seciliCihazTuru.getId()).findFirst().orElse(null));
         }
     }
-
 
     @FXML
     private void handleMarkaYeni() {
@@ -177,65 +171,68 @@ public class KategoriViewController {
         dialog.setTitle("Yeni Marka Ekle");
         dialog.setHeaderText("Eklenecek markanın adını girin:");
         dialog.setContentText("Marka Adı:");
-
         Optional<String> result = dialog.showAndWait();
         result.ifPresent(markaAdi -> {
-            if (markaAdi.trim().isEmpty()) { showAlert(AlertType.WARNING, "Giriş Hatası", "Marka adı boş bırakılamaz!"); return; }
-            boolean eklendi = markaDAO.addMarka(markaAdi.trim());
-            if (eklendi) {
+            if (markaAdi.trim().isEmpty()) {
+                showAlert(AlertType.WARNING, "Giriş Hatası", "Marka adı boş bırakılamaz!");
+                return;
+            }
+            if (markaDAO.addMarka(markaAdi.trim())) {
                 showAlert(AlertType.INFORMATION, "Başarılı", "'" + markaAdi.trim() + "' markası eklendi.");
                 loadMarkaTable();
-            } else { showAlert(AlertType.ERROR, "Ekleme Hatası", "'" + markaAdi.trim() + "' markası eklenemedi. (Muhtemelen zaten mevcut)"); }
+            } else {
+                showAlert(AlertType.ERROR, "Ekleme Hatası", "'" + markaAdi.trim() + "' markası eklenemedi (muhtemelen zaten mevcut).");
+            }
         });
     }
 
     @FXML
     private void handleModelYeni() {
-         Marka markaFiltre = cmbModelMarkaFilter.getValue();
-         Marka markaTablo = tblMarkalar.getSelectionModel().getSelectedItem();
-         Marka kullanilacakMarka = null;
+        Marka kullanilacakMarka = Optional.ofNullable(cmbModelMarkaFilter.getValue())
+                                      .orElse(tblMarkalar.getSelectionModel().getSelectedItem());
+        if (kullanilacakMarka == null) {
+            showAlert(AlertType.INFORMATION, "Marka Seçin", "Yeni model eklemek için lütfen önce bir marka seçin.");
+            return;
+        }
+        cmbModelMarkaFilter.setValue(kullanilacakMarka);
 
-         if (markaFiltre != null) kullanilacakMarka = markaFiltre;
-         else if (markaTablo != null) kullanilacakMarka = markaTablo;
-
-         if (kullanilacakMarka == null) {
-              showAlert(AlertType.INFORMATION, "Marka Seçin", "Yeni model eklemek için lütfen önce Marka Filtresi'nden veya Markalar listesinden bir marka seçin.");
-              return;
-         }
-         cmbModelMarkaFilter.setValue(kullanilacakMarka);
-
-         final Marka finalKullanilacakMarka = kullanilacakMarka;
-         TextInputDialog dialog = new TextInputDialog();
-         dialog.setTitle("Yeni Model Ekle");
-         dialog.setHeaderText(finalKullanilacakMarka.getAd() + " markasına yeni model ekleyin:");
-         dialog.setContentText("Model Adı:");
-
-         Optional<String> result = dialog.showAndWait();
-         result.ifPresent(modelAdi -> {
-              if (modelAdi.trim().isEmpty()) { showAlert(AlertType.WARNING, "Giriş Hatası", "Model adı boş olamaz."); return; }
-              boolean eklendi = modelDAO.addModel(finalKullanilacakMarka.getId(), modelAdi.trim());
-              if (eklendi) {
-                  showAlert(AlertType.INFORMATION, "Başarılı", "'" + modelAdi.trim() + "' modeli, " + finalKullanilacakMarka.getAd() + " markasına eklendi.");
-                  loadModelTable(finalKullanilacakMarka.getId());
-              } else { showAlert(AlertType.ERROR, "Ekleme Hatası", "Model eklenemedi. (Muhtemelen zaten mevcut)"); }
-         });
+        TextInputDialog dialog = new TextInputDialog();
+        dialog.setTitle("Yeni Model Ekle");
+        dialog.setHeaderText(kullanilacakMarka.getAd() + " markasına yeni model ekleyin:");
+        dialog.setContentText("Model Adı:");
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(modelAdi -> {
+            if (modelAdi.trim().isEmpty()) {
+                showAlert(AlertType.WARNING, "Giriş Hatası", "Model adı boş olamaz.");
+                return;
+            }
+            if (modelDAO.addModel(kullanilacakMarka.getId(), modelAdi.trim())) {
+                showAlert(AlertType.INFORMATION, "Başarılı", "'" + modelAdi.trim() + "' modeli, " + kullanilacakMarka.getAd() + " markasına eklendi.");
+                loadModelTable(kullanilacakMarka.getId());
+            } else {
+                showAlert(AlertType.ERROR, "Ekleme Hatası", "Model eklenemedi (muhtemelen zaten mevcut).");
+            }
+        });
     }
 
-     @FXML
-    private void handleTipYeni() {
+    @FXML
+    private void handleCihazTuruYeni() {
         TextInputDialog dialog = new TextInputDialog();
-        dialog.setTitle("Yeni Tip Ekle");
-        dialog.setHeaderText("Eklenecek tipin adını girin (örn: Buzdolabı):");
-        dialog.setContentText("Tip Adı:");
-
+        dialog.setTitle("Yeni Cihaz Türü Ekle");
+        dialog.setHeaderText("Eklenecek cihaz türünün adını girin (örn: Split Klima):");
+        dialog.setContentText("Cihaz Türü Adı:");
         Optional<String> result = dialog.showAndWait();
-        result.ifPresent(tipAdi -> {
-             if (tipAdi.trim().isEmpty()) { showAlert(AlertType.WARNING, "Giriş Hatası", "Tip adı boş bırakılamaz!"); return; }
-            boolean eklendi = tipDAO.addTip(tipAdi.trim());
-             if (eklendi) {
-                showAlert(AlertType.INFORMATION, "Başarılı", "'" + tipAdi.trim() + "' tipi eklendi.");
-                loadTipTable();
-            } else { showAlert(AlertType.ERROR, "Ekleme Hatası", "'" + tipAdi.trim() + "' tipi eklenemedi. (Muhtemelen zaten mevcut)"); }
+        result.ifPresent(cihazTuruAdi -> {
+            if (cihazTuruAdi.trim().isEmpty()) {
+                showAlert(AlertType.WARNING, "Giriş Hatası", "Cihaz türü adı boş bırakılamaz!");
+                return;
+            }
+            if (cihazTuruDAO.addCihazTuru(cihazTuruAdi.trim())) {
+                showAlert(AlertType.INFORMATION, "Başarılı", "'" + cihazTuruAdi.trim() + "' cihaz türü eklendi.");
+                loadCihazTuruTable();
+            } else {
+                showAlert(AlertType.ERROR, "Ekleme Hatası", "'" + cihazTuruAdi.trim() + "' cihaz türü eklenemedi (muhtemelen zaten mevcut).");
+            }
         });
     }
 
@@ -243,69 +240,73 @@ public class KategoriViewController {
     private void handleMarkaDuzenle() {
         Marka seciliMarka = tblMarkalar.getSelectionModel().getSelectedItem();
         if (seciliMarka == null) return;
-
         TextInputDialog dialog = new TextInputDialog(seciliMarka.getAd());
         dialog.setTitle("Marka Düzenle");
         dialog.setHeaderText("Markanın yeni adını girin:");
         dialog.setContentText("Marka Adı:");
-
         Optional<String> result = dialog.showAndWait();
         result.ifPresent(yeniAd -> {
-            if (yeniAd.trim().isEmpty()) { showAlert(AlertType.WARNING, "Giriş Hatası", "Marka adı boş bırakılamaz!"); return; }
+            if (yeniAd.trim().isEmpty()) {
+                showAlert(AlertType.WARNING, "Giriş Hatası", "Marka adı boş bırakılamaz!");
+                return;
+            }
             if (!yeniAd.trim().equals(seciliMarka.getAd())) {
-                boolean guncellendi = markaDAO.updateMarka(seciliMarka.getId(), yeniAd.trim());
-                if (guncellendi) {
+                if (markaDAO.updateMarka(seciliMarka.getId(), yeniAd.trim())) {
                     showAlert(AlertType.INFORMATION, "Başarılı", "Marka başarıyla güncellendi.");
                     loadMarkaTable();
-                    loadModelTable(cmbModelMarkaFilter.getValue() != null ? cmbModelMarkaFilter.getValue().getId() : null);
-                } else { showAlert(AlertType.ERROR, "Güncelleme Hatası", "Marka güncellenemedi."); }
+                } else {
+                    showAlert(AlertType.ERROR, "Güncelleme Hatası", "Marka güncellenemedi.");
+                }
             }
         });
     }
 
-     @FXML
+    @FXML
     private void handleModelDuzenle() {
-         Model seciliModel = tblModeller.getSelectionModel().getSelectedItem();
-         if (seciliModel == null) return;
-
-          TextInputDialog dialog = new TextInputDialog(seciliModel.getAd());
-         dialog.setTitle("Model Düzenle");
-         dialog.setHeaderText("Modelin yeni adını girin:");
-         dialog.setContentText("Model Adı:");
-
-         Optional<String> result = dialog.showAndWait();
-         result.ifPresent(yeniAd -> {
-              if (yeniAd.trim().isEmpty()) { showAlert(AlertType.WARNING, "Giriş Hatası", "Model adı boş olamaz."); return; }
-             if (!yeniAd.trim().equals(seciliModel.getAd())) {
-                boolean guncellendi = modelDAO.updateModel(seciliModel.getId(), yeniAd.trim());
-                 if (guncellendi) {
-                    showAlert(AlertType.INFORMATION, "Başarılı", "Model başarıyla güncellendi.");
-                    Marka seciliFiltre = cmbModelMarkaFilter.getValue();
-                    loadModelTable(seciliFiltre != null ? seciliFiltre.getId() : null);
-                } else { showAlert(AlertType.ERROR, "Güncelleme Hatası", "Model güncellenemedi."); }
-            }
-        });
-    }
-
-     @FXML
-    private void handleTipDuzenle() {
-        Tip seciliTip = tblTipler.getSelectionModel().getSelectedItem();
-        if (seciliTip == null) return;
-
-         TextInputDialog dialog = new TextInputDialog(seciliTip.getAd());
-        dialog.setTitle("Tip Düzenle");
-        dialog.setHeaderText("Tipin yeni adını girin:");
-        dialog.setContentText("Tip Adı:");
-
+        Model seciliModel = tblModeller.getSelectionModel().getSelectedItem();
+        if (seciliModel == null) return;
+        TextInputDialog dialog = new TextInputDialog(seciliModel.getAd());
+        dialog.setTitle("Model Düzenle");
+        dialog.setHeaderText("Modelin yeni adını girin:");
+        dialog.setContentText("Model Adı:");
         Optional<String> result = dialog.showAndWait();
         result.ifPresent(yeniAd -> {
-             if (yeniAd.trim().isEmpty()) { showAlert(AlertType.WARNING, "Giriş Hatası", "Tip adı boş bırakılamaz!"); return; }
-            if (!yeniAd.trim().equals(seciliTip.getAd())) {
-                boolean guncellendi = tipDAO.updateTip(seciliTip.getId(), yeniAd.trim());
-                 if (guncellendi) {
-                    showAlert(AlertType.INFORMATION, "Başarılı", "Tip başarıyla güncellendi.");
-                    loadTipTable();
-                } else { showAlert(AlertType.ERROR, "Güncelleme Hatası", "Tip güncellenemedi."); }
+            if (yeniAd.trim().isEmpty()) {
+                showAlert(AlertType.WARNING, "Giriş Hatası", "Model adı boş olamaz.");
+                return;
+            }
+            if (!yeniAd.trim().equals(seciliModel.getAd())) {
+                if (modelDAO.updateModel(seciliModel.getId(), yeniAd.trim())) {
+                    showAlert(AlertType.INFORMATION, "Başarılı", "Model başarıyla güncellendi.");
+                    loadModelTable(seciliModel.getMarkaId());
+                } else {
+                    showAlert(AlertType.ERROR, "Güncelleme Hatası", "Model güncellenemedi.");
+                }
+            }
+        });
+    }
+
+    @FXML
+    private void handleCihazTuruDuzenle() {
+        CihazTuru seciliCihazTuru = tblCihazTurleri.getSelectionModel().getSelectedItem();
+        if (seciliCihazTuru == null) return;
+        TextInputDialog dialog = new TextInputDialog(seciliCihazTuru.getAd());
+        dialog.setTitle("Cihaz Türü Düzenle");
+        dialog.setHeaderText("Cihaz türünün yeni adını girin:");
+        dialog.setContentText("Cihaz Türü Adı:");
+        Optional<String> result = dialog.showAndWait();
+        result.ifPresent(yeniAd -> {
+            if (yeniAd.trim().isEmpty()) {
+                showAlert(AlertType.WARNING, "Giriş Hatası", "Cihaz türü adı boş bırakılamaz!");
+                return;
+            }
+            if (!yeniAd.trim().equals(seciliCihazTuru.getAd())) {
+                if (cihazTuruDAO.updateCihazTuru(seciliCihazTuru.getId(), yeniAd.trim())) {
+                    showAlert(AlertType.INFORMATION, "Başarılı", "Cihaz türü başarıyla güncellendi.");
+                    loadCihazTuruTable();
+                } else {
+                    showAlert(AlertType.ERROR, "Güncelleme Hatası", "Cihaz türü güncellenemedi.");
+                }
             }
         });
     }
@@ -314,62 +315,58 @@ public class KategoriViewController {
     private void handleMarkaSil() {
         Marka seciliMarka = tblMarkalar.getSelectionModel().getSelectedItem();
         if (seciliMarka == null) return;
-
         Alert alert = new Alert(AlertType.CONFIRMATION);
         alert.setTitle("Marka Silme Onayı");
         alert.setHeaderText("'" + seciliMarka.getAd() + "' markasını silmek istediğinizden emin misiniz?");
-        alert.setContentText("Bu markaya ait modeller de silinebilir!");
-
+        alert.setContentText("Bu markaya ait tüm modeller de silinecektir (ON DELETE CASCADE).");
         Optional<ButtonType> result = alert.showAndWait();
         if (result.isPresent() && result.get() == ButtonType.OK) {
-            boolean silindi = markaDAO.deleteMarka(seciliMarka.getId());
-            if (silindi) {
+            if (markaDAO.deleteMarka(seciliMarka.getId())) {
                 showAlert(AlertType.INFORMATION, "Başarılı", "Marka başarıyla silindi.");
                 loadMarkaTable();
                 loadModelTable(null);
-            } else { showAlert(AlertType.ERROR, "Silme Hatası", "Marka silinemedi! Muhtemelen başka kayıtlarda kullanılıyor."); }
+            } else {
+                showAlert(AlertType.ERROR, "Silme Hatası", "Marka silinemedi! Başka kayıtlarda kullanılıyor olabilir.");
+            }
         }
     }
 
-     @FXML
+    @FXML
     private void handleModelSil() {
         Model seciliModel = tblModeller.getSelectionModel().getSelectedItem();
         if (seciliModel == null) return;
-
-         Alert alert = new Alert(AlertType.CONFIRMATION);
+        Alert alert = new Alert(AlertType.CONFIRMATION);
         alert.setTitle("Model Silme Onayı");
         alert.setHeaderText("'" + seciliModel.getAd() + "' modelini silmek istediğinizden emin misiniz?");
         alert.setContentText("Bu işlem geri alınamaz!");
-
-         Optional<ButtonType> result = alert.showAndWait();
-         if (result.isPresent() && result.get() == ButtonType.OK) {
-            boolean silindi = modelDAO.deleteModel(seciliModel.getId());
-             if (silindi) {
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            if (modelDAO.deleteModel(seciliModel.getId())) {
                 showAlert(AlertType.INFORMATION, "Başarılı", "Model başarıyla silindi.");
-                 Marka seciliFiltre = cmbModelMarkaFilter.getValue();
-                 loadModelTable(seciliFiltre != null ? seciliFiltre.getId() : null);
-            } else { showAlert(AlertType.ERROR, "Silme Hatası", "Model silinemedi! Muhtemelen başka kayıtlarda (parçalar) kullanılıyor."); }
+                loadModelTable(seciliModel.getMarkaId());
+            } else {
+                showAlert(AlertType.ERROR, "Silme Hatası", "Model silinemedi! Muhtemelen stoktaki parçalar tarafından kullanılıyor.");
+            }
         }
     }
 
-     @FXML
-    private void handleTipSil() {
-         Tip seciliTip = tblTipler.getSelectionModel().getSelectedItem();
-         if (seciliTip == null) return;
-
-          Alert alert = new Alert(AlertType.CONFIRMATION);
-         alert.setTitle("Tip Silme Onayı");
-         alert.setHeaderText("'" + seciliTip.getAd() + "' tipini silmek istediğinizden emin misiniz?");
-         alert.setContentText("Bu işlem geri alınamaz!");
-
-          Optional<ButtonType> result = alert.showAndWait();
-          if (result.isPresent() && result.get() == ButtonType.OK) {
-             boolean silindi = tipDAO.deleteTip(seciliTip.getId());
-              if (silindi) {
-                 showAlert(AlertType.INFORMATION, "Başarılı", "Tip başarıyla silindi.");
-                 loadTipTable();
-             } else { showAlert(AlertType.ERROR, "Silme Hatası", "Tip silinemedi! Muhtemelen başka kayıtlarda (parçalar) kullanılıyor."); }
-         }
+    @FXML
+    private void handleCihazTuruSil() {
+        CihazTuru seciliCihazTuru = tblCihazTurleri.getSelectionModel().getSelectedItem();
+        if (seciliCihazTuru == null) return;
+        Alert alert = new Alert(AlertType.CONFIRMATION);
+        alert.setTitle("Cihaz Türü Silme Onayı");
+        alert.setHeaderText("'" + seciliCihazTuru.getAd() + "' cihaz türünü silmek istediğinizden emin misiniz?");
+        alert.setContentText("Bu işlem geri alınamaz!");
+        Optional<ButtonType> result = alert.showAndWait();
+        if (result.isPresent() && result.get() == ButtonType.OK) {
+            if (cihazTuruDAO.deleteCihazTuru(seciliCihazTuru.getId())) {
+                showAlert(AlertType.INFORMATION, "Başarılı", "Cihaz türü başarıyla silindi.");
+                loadCihazTuruTable();
+            } else {
+                showAlert(AlertType.ERROR, "Silme Hatası", "Cihaz türü silinemedi! Muhtemelen stoktaki parçalar tarafından kullanılıyor.");
+            }
+        }
     }
 
     private void showAlert(AlertType alertType, String title, String message) {
@@ -380,40 +377,35 @@ public class KategoriViewController {
         alert.showAndWait();
     }
 
-    /** Public method to be called when this tab becomes visible 
-     * or when there's an external data change. Reloads the tables and ComboBox. */
+    /**
+     * Public method to be called when this tab becomes visible
+     * or when there's an external data change. Reloads the tables and ComboBox.
+     */
     public void refreshData() {
-        System.out.println("KategoriView verileri yenileniyor...");
+        System.out.println("KategoriView data is being refreshed...");
+        
+        // Preserve selections
         Marka seciliMarkaFiltre = cmbModelMarkaFilter.getValue();
         Marka seciliMarkaTablo = tblMarkalar.getSelectionModel().getSelectedItem();
-        Tip seciliTipTablo = tblTipler.getSelectionModel().getSelectedItem();
         Model seciliModelTablo = tblModeller.getSelectionModel().getSelectedItem();
+        CihazTuru seciliCihazTuruTablo = tblCihazTurleri.getSelectionModel().getSelectedItem();
 
+        // Refresh lists from DB
         markaList.setAll(markaDAO.getAllMarkalar());
-        tipList.setAll(tipDAO.getAllTipler());
+        cihazTuruList.setAll(cihazTuruDAO.getAllCihazTurleri());
 
-        cmbModelMarkaFilter.setValue(markaList.stream().filter(m -> m.getId() == (seciliMarkaFiltre != null ? seciliMarkaFiltre.getId() : -1)).findFirst().orElse(null));
-        tblMarkalar.getSelectionModel().select(markaList.stream().filter(m -> m.getId() == (seciliMarkaTablo != null ? seciliMarkaTablo.getId() : -1)).findFirst().orElse(null));
-        if (tblMarkalar.getSelectionModel().getSelectedItem() == null) tblMarkalar.getSelectionModel().clearSelection();
+        // Restore selections
+        if (seciliMarkaFiltre != null) cmbModelMarkaFilter.getSelectionModel().select(seciliMarkaFiltre);
+        if (seciliMarkaTablo != null) tblMarkalar.getSelectionModel().select(seciliMarkaTablo);
+        
+        // Reload model table based on filter (this will clear model selection)
+        Integer markaId = cmbModelMarkaFilter.getValue() != null ? cmbModelMarkaFilter.getValue().getId() : null;
+        loadModelTable(markaId); // This method already preserves selection if possible
+        if (seciliModelTablo != null) tblModeller.getSelectionModel().select(seciliModelTablo); // Re-select if still in list
 
-
-        tblTipler.getSelectionModel().select(tipList.stream().filter(t -> t.getId() == (seciliTipTablo != null ? seciliTipTablo.getId() : -1)).findFirst().orElse(null));
-         if (tblTipler.getSelectionModel().getSelectedItem() == null) tblTipler.getSelectionModel().clearSelection();
-
-
-        Marka mevcutMarkaFiltre = cmbModelMarkaFilter.getValue();
-        Integer markaId = mevcutMarkaFiltre != null ? mevcutMarkaFiltre.getId() : null;
-        modelList.clear();
-        if (markaId != null && markaId > 0) {
-            modelList.setAll(modelDAO.getModellerByMarkaId(markaId));
-        }
-        if (seciliModelTablo != null) {
-             tblModeller.getSelectionModel().select(modelList.stream().filter(m -> m.getId() == seciliModelTablo.getId()).findFirst().orElse(null));
-        }
-         if (tblModeller.getSelectionModel().getSelectedItem() == null) tblModeller.getSelectionModel().clearSelection();
-
+        if (seciliCihazTuruTablo != null) tblCihazTurleri.getSelectionModel().select(seciliCihazTuruTablo);
 
         updateButtonStates();
-        System.out.println("KategoriView verileri yenilendi.");
+        System.out.println("KategoriView data has been refreshed.");
     }
 }

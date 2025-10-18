@@ -79,30 +79,30 @@
             </VBox>
 
             <VBox spacing="10.0" HBox.hgrow="ALWAYS">
-               <children>
-                  <Label text="Tipler">
-                     <font>
+            <children>
+                <Label text="Cihaz Türleri">
+                    <font>
                         <Font name="System Bold" size="14.0" />
-                     </font>
-                  </Label>
-                  <TableView fx:id="tblTipler" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
-                     <columns>
-                        <TableColumn fx:id="colTipId" prefWidth="50.0" text="ID" />
-                        <TableColumn fx:id="colTipAd" prefWidth="180.0" text="Tip Adı" />
-                     </columns>
-                     <columnResizePolicy>
+                    </font>
+                </Label>
+                <TableView fx:id="tblCihazTurleri" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+                    <columns>
+                        <TableColumn fx:id="colCihazTuruId" prefWidth="50.0" text="ID" />
+                        <TableColumn fx:id="colCihazTuruAd" prefWidth="180.0" text="Cihaz Türü Adı" />
+                    </columns>
+                    <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-                     </columnResizePolicy>
-                  </TableView>
-                  <HBox alignment="CENTER_RIGHT" spacing="10.0">
-                     <children>
-                         <Button fx:id="btnTipYeni" mnemonicParsing="false" onAction="#handleTipYeni" text="Yeni Ekle..." />
-                        <Button fx:id="btnTipDuzenle" disable="true" mnemonicParsing="false" onAction="#handleTipDuzenle" text="Düzenle" />
-                        <Button fx:id="btnTipSil" disable="true" mnemonicParsing="false" onAction="#handleTipSil" text="Sil" />
-                     </children>
-                  </HBox>
-               </children>
-            </VBox>
+                    </columnResizePolicy>
+                </TableView>
+                <HBox alignment="CENTER_RIGHT" spacing="10.0">
+                    <children>
+                        <Button fx:id="btnCihazTuruYeni" mnemonicParsing="false" onAction="#handleCihazTuruYeni" text="Yeni Ekle..." />
+                        <Button fx:id="btnCihazTuruDuzenle" disable="true" mnemonicParsing="false" onAction="#handleCihazTuruDuzenle" text="Düzenle" />
+                        <Button fx:id="btnCihazTuruSil" disable="true" mnemonicParsing="false" onAction="#handleCihazTuruSil" text="Sil" />
+                    </children>
+                </HBox>
+            </children>
+         </VBox>
 
          </children>
       </HBox>
