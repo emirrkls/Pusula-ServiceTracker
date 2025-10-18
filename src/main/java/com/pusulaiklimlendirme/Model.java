@@ -1,11 +1,9 @@
-package com.pusulaiklimlendirme; // veya com.pusulaiklimlendirme.model
+package com.pusulaiklimlendirme;
 
 public class Model {
     private int id;
-    private int markaId; // marka_id sütununa karşılık gelir
+    private int markaId;
     private String ad;
-    // İsteğe bağlı: İlişkili Marka nesnesini tutmak için (DAO'da doldurulur)
-    // private Marka marka;
 
     public Model() {}
 
@@ -15,7 +13,6 @@ public class Model {
         this.ad = ad;
     }
 
-    // --- Getter ve Setterlar ---
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
     public int getMarkaId() { return markaId; }
@@ -25,6 +22,6 @@ public class Model {
 
     @Override
     public String toString() {
-        return ad; // Genellikle sadece model adı yeterli olur
+        return ad;
     }
 }

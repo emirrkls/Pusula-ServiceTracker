@@ -1,11 +1,11 @@
-package com.pusulaiklimlendirme; // veya com.pusulaiklimlendirme.model
+package com.pusulaiklimlendirme;
 
 public class Marka {
     private int id;
     private String ad;
 
-    // Kurucu Metotlar (Constructors)
-    public Marka() { // Varsayılan (boş) kurucu
+
+    public Marka() {
     }
 
     public Marka(int id, String ad) {
@@ -13,7 +13,6 @@ public class Marka {
         this.ad = ad;
     }
 
-    // Getter ve Setter Metotları
     public int getId() {
         return id;
     }
@@ -30,9 +29,8 @@ public class Marka {
         this.ad = ad;
     }
 
-    // ComboBox'ta düzgün görünmesi için toString() metodunu override et
     @Override
     public String toString() {
-        return ad; // Sadece adı göster
+        return ad;
     }
 }

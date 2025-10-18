@@ -11,14 +11,11 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<!-- Ana AnchorPane -->
 <AnchorPane prefHeight="600.0" prefWidth="800.0" xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.pusulaiklimlendirme.KategoriViewController">
    <children>
-      <!-- Ana Düzen: Yan Yana 3 Kategori Bölümü -->
       <HBox spacing="20.0" AnchorPane.bottomAnchor="10.0" AnchorPane.leftAnchor="10.0" AnchorPane.rightAnchor="10.0" AnchorPane.topAnchor="10.0">
          <children>
 
-            <!-- 1. Markalar Bölümü -->
             <VBox spacing="10.0" HBox.hgrow="ALWAYS">
                <children>
                   <Label text="Markalar">
@@ -45,7 +42,6 @@
                </children>
             </VBox>
 
-            <!-- 2. Modeller Bölümü (Filtre Eklendi) -->
             <VBox spacing="10.0" HBox.hgrow="ALWAYS">
                <children>
                   <Label text="Modeller">
@@ -53,7 +49,6 @@
                         <Font name="System Bold" size="14.0" />
                      </font>
                   </Label>
-                  <!-- Marka Filtre ComboBox -->
                   <HBox alignment="CENTER_LEFT" spacing="10.0">
                      <children>
                         <Label text="Marka Filtresi:" />
@@ -66,7 +61,7 @@
                   <TableView fx:id="tblModeller" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
                      <columns>
                         <TableColumn fx:id="colModelId" prefWidth="50.0" text="ID" />
-                        <TableColumn fx:id="colModelMarkaId" prefWidth="70.0" text="Marka ID" /> <!-- İleride marka adı yapılabilir -->
+                        <TableColumn fx:id="colModelMarkaId" prefWidth="70.0" text="Marka ID" /> 
                         <TableColumn fx:id="colModelAd" prefWidth="160.0" text="Model Adı" />
                      </columns>
                      <columnResizePolicy>
@@ -83,7 +78,6 @@
                </children>
             </VBox>
 
-            <!-- 3. Tipler Bölümü -->
             <VBox spacing="10.0" HBox.hgrow="ALWAYS">
                <children>
                   <Label text="Tipler">

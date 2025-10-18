@@ -131,7 +131,16 @@ Key constraints include Foreign Keys (with `ON DELETE CASCADE/RESTRICT/SET NULL`
 
 ## Screenshots
 
-*(Screenshots of the application's main interface, forms, and tables will be added here soon. This will help visualize the application's functionality.)*
+Here are the screenshots of the main modules from the first working version of the application (v1.0).
+
+### Category Management Screen
+![Category Management Screen](docs/images/kategoriler_v1.png)
+
+### Stock Management Screen
+![Stock Management Screen](docs/images/stokYonetimi_v1.png)
+
+### Customer & Service Management Screen
+![Customer & Service Management Screen](docs/images/musteriServis_v1.png)
 
 
 ## Setup and Usage Notes

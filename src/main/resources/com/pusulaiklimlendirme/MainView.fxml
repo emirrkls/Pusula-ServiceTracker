@@ -4,27 +4,22 @@
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.layout.BorderPane?>
 
-<!-- Ana konteyner olarak BorderPane kullanabiliriz -->
 <BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.pusulaiklimlendirme.MainViewController">
    <center>
-      <!-- Python'daki ttk.Notebook karşılığı: TabPane -->
       <TabPane fx:id="mainTabPane" tabClosingPolicy="UNAVAILABLE">
         <tabs>
           <Tab fx:id="tabKategoriler" text="Kategoriler">
               <content>
-                  <!-- fx:id="kategoriView" eklendi -->
                   <fx:include fx:id="kategoriView" source="KategoriView.fxml"/>
               </content>
           </Tab>
           <Tab fx:id="tabStokYonetimi" text="Stok Yönetimi">
                <content>
-                   <!-- fx:id="stokView" eklendi -->
                   <fx:include fx:id="stokView" source="StokView.fxml"/>
                </content>
           </Tab>
           <Tab fx:id="tabMusteriServis" text="Müşteri &amp; Servis">
               <content>
-                  <!-- fx:id="musteriServisView" eklendi -->
                   <fx:include fx:id="musteriServisView" source="MusteriServisView.fxml"/>
               </content>
           </Tab>

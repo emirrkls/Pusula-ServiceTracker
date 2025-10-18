@@ -1,6 +1,5 @@
 package com.pusulaiklimlendirme;
 
-// Gerekli Importlar
 import com.pusulaiklimlendirme.Marka;
 import com.pusulaiklimlendirme.Model;
 import com.pusulaiklimlendirme.Tip;
@@ -10,15 +9,13 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.cell.PropertyValueFactory;
-import javafx.scene.input.MouseButton; // Çift tıklama için
+import javafx.scene.input.MouseButton; // For double click
 
 import java.util.List;
 import java.util.Optional;
 
 public class KategoriViewController {
 
-    // --- FXML Alanları (Yeni Düzen) ---
-    // Marka Tablosu ve Butonları
     @FXML private TableView<Marka> tblMarkalar;
     @FXML private TableColumn<Marka, Integer> colMarkaId;
     @FXML private TableColumn<Marka, String> colMarkaAd;
@@ -26,8 +23,7 @@ public class KategoriViewController {
     @FXML private Button btnMarkaDuzenle;
     @FXML private Button btnMarkaSil;
 
-    // Model Bölümü
-    @FXML private ComboBox<Marka> cmbModelMarkaFilter; // Marka filtre ComboBox
+    @FXML private ComboBox<Marka> cmbModelMarkaFilter;
     @FXML private TableView<Model> tblModeller;
     @FXML private TableColumn<Model, Integer> colModelId;
     @FXML private TableColumn<Model, Integer> colModelMarkaId;
@@ -36,7 +32,6 @@ public class KategoriViewController {
     @FXML private Button btnModelDuzenle;
     @FXML private Button btnModelSil;
 
-    // Tip Tablosu ve Butonları
     @FXML private TableView<Tip> tblTipler;
     @FXML private TableColumn<Tip, Integer> colTipId;
     @FXML private TableColumn<Tip, String> colTipAd;
@@ -44,55 +39,43 @@ public class KategoriViewController {
     @FXML private Button btnTipDuzenle;
     @FXML private Button btnTipSil;
 
-    // --- DAO Nesneleri ---
     private final MarkaDAO markaDAO = new MarkaDAO();
     private final ModelDAO modelDAO = new ModelDAO();
     private final TipDAO tipDAO = new TipDAO();
 
-    // --- ObservableList'ler ---
     private ObservableList<Marka> markaList = FXCollections.observableArrayList();
     private ObservableList<Model> modelList = FXCollections.observableArrayList();
     private ObservableList<Tip> tipList = FXCollections.observableArrayList();
 
-    // --- Başlatma Metodu ---
     @FXML
     private void initialize() {
         System.out.println("KategoriViewController başlatıldı (Model Filtre ve Refresh ile)!");
 
-        // 1. Tablo Sütunlarını Ayarla
         configureTableColumns();
 
-        // 2. Tablolara ve ComboBox'lara Veri Listelerini Bağla
         tblMarkalar.setItems(markaList);
         tblModeller.setItems(modelList);
         tblTipler.setItems(tipList);
-        cmbModelMarkaFilter.setItems(markaList); // Filtre ComboBox'ını bağla
+        cmbModelMarkaFilter.setItems(markaList);
 
-        // 3. Başlangıç Verilerini Yükle
-        refreshData(); // Bu metot tüm listeleri ve tabloları doldurur
+        refreshData();
 
-        // 4. Listener'ları Ayarla
         addSelectionListeners();
         addDoubleClickListeners();
-        addMarkaFilterListener(); // Marka filtresi için
+        addMarkaFilterListener();
 
-        // 5. Buton Durumlarını Ayarla
-        updateButtonStates(); // refreshData içinde de çağrılıyor ama başlangıç için de kalsın
+        updateButtonStates();
     }
 
-    // --- Tablo ve Buton Ayarları ---
 
     private void configureTableColumns() {
-        // Marka Tablosu
         colMarkaId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colMarkaAd.setCellValueFactory(new PropertyValueFactory<>("ad"));
 
-        // Model Tablosu
         colModelId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colModelMarkaId.setCellValueFactory(new PropertyValueFactory<>("markaId"));
         colModelAd.setCellValueFactory(new PropertyValueFactory<>("ad"));
 
-        // Tip Tablosu
         colTipId.setCellValueFactory(new PropertyValueFactory<>("id"));
         colTipAd.setCellValueFactory(new PropertyValueFactory<>("ad"));
     }
@@ -124,7 +107,6 @@ public class KategoriViewController {
     private void addMarkaFilterListener() {
         cmbModelMarkaFilter.valueProperty().addListener((obs, oldVal, newVal) -> {
             loadModelTable(newVal != null ? newVal.getId() : null);
-            // Marka filtresi değişince model seçimi kalkmalı
             tblModeller.getSelectionModel().clearSelection();
         });
     }
@@ -134,7 +116,6 @@ public class KategoriViewController {
         boolean filtreSecili = cmbModelMarkaFilter.getValue() != null;
         btnMarkaDuzenle.setDisable(!markaSecili);
         btnMarkaSil.setDisable(!markaSecili);
-        // Yeni model ekleme butonu filtrede veya tabloda marka seçiliyken aktif
         btnModelYeni.setDisable(!filtreSecili && !markaSecili);
 
         boolean modelSecili = tblModeller.getSelectionModel().getSelectedItem() != null;
@@ -146,7 +127,6 @@ public class KategoriViewController {
         btnTipSil.setDisable(!tipSecili);
     }
 
-    // --- Veri Yükleme Metotları ---
 
     private void loadMarkaTable() {
         Marka seciliFiltre = cmbModelMarkaFilter.getValue();
@@ -154,7 +134,6 @@ public class KategoriViewController {
 
         markaList.setAll(markaDAO.getAllMarkalar());
 
-        // Seçimleri geri yükle (eğer listede hala varsa)
         if (seciliFiltre != null) {
              cmbModelMarkaFilter.setValue(markaList.stream().filter(m -> m.getId() == seciliFiltre.getId()).findFirst().orElse(null));
         }
@@ -164,7 +143,6 @@ public class KategoriViewController {
         if (tblMarkalar.getSelectionModel().getSelectedItem() == null) {
             tblMarkalar.getSelectionModel().clearSelection();
         }
-        // System.out.println("Marka tablosu ve filtre yüklendi/yenilendi.");
     }
 
     private void loadModelTable(Integer markaId) {
@@ -173,14 +151,12 @@ public class KategoriViewController {
         if (markaId != null && markaId > 0) {
             modelList.setAll(modelDAO.getModellerByMarkaId(markaId));
         }
-        // Seçimi geri yükle
         if (seciliModel != null) {
              tblModeller.getSelectionModel().select(modelList.stream().filter(m -> m.getId() == seciliModel.getId()).findFirst().orElse(null));
         }
         if (tblModeller.getSelectionModel().getSelectedItem() == null) {
             tblModeller.getSelectionModel().clearSelection();
         }
-        // System.out.println("Model tablosu yüklendi/yenilendi.");
     }
 
      private void loadTipTable() {
@@ -192,10 +168,8 @@ public class KategoriViewController {
         if (tblTipler.getSelectionModel().getSelectedItem() == null) {
              tblTipler.getSelectionModel().clearSelection();
         }
-        // System.out.println("Tip tablosu yüklendi/yenilendi.");
     }
 
-    // --- Ekleme, Düzenleme, Silme Aksiyonları ---
 
     @FXML
     private void handleMarkaYeni() {
@@ -210,7 +184,7 @@ public class KategoriViewController {
             boolean eklendi = markaDAO.addMarka(markaAdi.trim());
             if (eklendi) {
                 showAlert(AlertType.INFORMATION, "Başarılı", "'" + markaAdi.trim() + "' markası eklendi.");
-                loadMarkaTable(); // Sadece marka tablosunu ve filtreyi yenile
+                loadMarkaTable();
             } else { showAlert(AlertType.ERROR, "Ekleme Hatası", "'" + markaAdi.trim() + "' markası eklenemedi. (Muhtemelen zaten mevcut)"); }
         });
     }
@@ -228,7 +202,6 @@ public class KategoriViewController {
               showAlert(AlertType.INFORMATION, "Marka Seçin", "Yeni model eklemek için lütfen önce Marka Filtresi'nden veya Markalar listesinden bir marka seçin.");
               return;
          }
-         // Filtre ComboBox'ını da seçilenle güncelleyelim (kullanıcı tablodan seçtiyse)
          cmbModelMarkaFilter.setValue(kullanilacakMarka);
 
          final Marka finalKullanilacakMarka = kullanilacakMarka;
@@ -243,7 +216,7 @@ public class KategoriViewController {
               boolean eklendi = modelDAO.addModel(finalKullanilacakMarka.getId(), modelAdi.trim());
               if (eklendi) {
                   showAlert(AlertType.INFORMATION, "Başarılı", "'" + modelAdi.trim() + "' modeli, " + finalKullanilacakMarka.getAd() + " markasına eklendi.");
-                  loadModelTable(finalKullanilacakMarka.getId()); // Sadece ilgili markanın modellerini yenile
+                  loadModelTable(finalKullanilacakMarka.getId());
               } else { showAlert(AlertType.ERROR, "Ekleme Hatası", "Model eklenemedi. (Muhtemelen zaten mevcut)"); }
          });
     }
@@ -261,7 +234,7 @@ public class KategoriViewController {
             boolean eklendi = tipDAO.addTip(tipAdi.trim());
              if (eklendi) {
                 showAlert(AlertType.INFORMATION, "Başarılı", "'" + tipAdi.trim() + "' tipi eklendi.");
-                loadTipTable(); // Sadece tip tablosunu yenile
+                loadTipTable();
             } else { showAlert(AlertType.ERROR, "Ekleme Hatası", "'" + tipAdi.trim() + "' tipi eklenemedi. (Muhtemelen zaten mevcut)"); }
         });
     }
@@ -283,8 +256,8 @@ public class KategoriViewController {
                 boolean guncellendi = markaDAO.updateMarka(seciliMarka.getId(), yeniAd.trim());
                 if (guncellendi) {
                     showAlert(AlertType.INFORMATION, "Başarılı", "Marka başarıyla güncellendi.");
-                    loadMarkaTable(); // Marka tablosunu ve filtreyi yenile
-                    loadModelTable(cmbModelMarkaFilter.getValue() != null ? cmbModelMarkaFilter.getValue().getId() : null); // Modelleri de etkileyebilir (eğer isimleri kullanılıyorsa)
+                    loadMarkaTable();
+                    loadModelTable(cmbModelMarkaFilter.getValue() != null ? cmbModelMarkaFilter.getValue().getId() : null);
                 } else { showAlert(AlertType.ERROR, "Güncelleme Hatası", "Marka güncellenemedi."); }
             }
         });
@@ -308,7 +281,7 @@ public class KategoriViewController {
                  if (guncellendi) {
                     showAlert(AlertType.INFORMATION, "Başarılı", "Model başarıyla güncellendi.");
                     Marka seciliFiltre = cmbModelMarkaFilter.getValue();
-                    loadModelTable(seciliFiltre != null ? seciliFiltre.getId() : null); // Sadece ilgili modeli yenile
+                    loadModelTable(seciliFiltre != null ? seciliFiltre.getId() : null);
                 } else { showAlert(AlertType.ERROR, "Güncelleme Hatası", "Model güncellenemedi."); }
             }
         });
@@ -331,7 +304,7 @@ public class KategoriViewController {
                 boolean guncellendi = tipDAO.updateTip(seciliTip.getId(), yeniAd.trim());
                  if (guncellendi) {
                     showAlert(AlertType.INFORMATION, "Başarılı", "Tip başarıyla güncellendi.");
-                    loadTipTable(); // Sadece tip tablosunu yenile
+                    loadTipTable();
                 } else { showAlert(AlertType.ERROR, "Güncelleme Hatası", "Tip güncellenemedi."); }
             }
         });
@@ -399,7 +372,6 @@ public class KategoriViewController {
          }
     }
 
-    // --- Diğer Yardımcı Metotlar ---
     private void showAlert(AlertType alertType, String title, String message) {
         Alert alert = new Alert(alertType);
         alert.setTitle(title);
@@ -408,49 +380,39 @@ public class KategoriViewController {
         alert.showAndWait();
     }
 
-    // --- REFRESH METODU ---
-    /**
-     * Bu sekme görünür olduğunda veya verilerde dışarıdan bir değişiklik olduğunda
-     * çağrılacak public metot. Tabloları ve ComboBox'ı yeniden yükler.
-     */
+    /** Public method to be called when this tab becomes visible 
+     * or when there's an external data change. Reloads the tables and ComboBox. */
     public void refreshData() {
         System.out.println("KategoriView verileri yenileniyor...");
-        // Seçimleri koru
         Marka seciliMarkaFiltre = cmbModelMarkaFilter.getValue();
         Marka seciliMarkaTablo = tblMarkalar.getSelectionModel().getSelectedItem();
         Tip seciliTipTablo = tblTipler.getSelectionModel().getSelectedItem();
         Model seciliModelTablo = tblModeller.getSelectionModel().getSelectedItem();
 
-        // Listeleri yenile
         markaList.setAll(markaDAO.getAllMarkalar());
         tipList.setAll(tipDAO.getAllTipler());
 
-        // Marka seçimlerini geri yükle
         cmbModelMarkaFilter.setValue(markaList.stream().filter(m -> m.getId() == (seciliMarkaFiltre != null ? seciliMarkaFiltre.getId() : -1)).findFirst().orElse(null));
         tblMarkalar.getSelectionModel().select(markaList.stream().filter(m -> m.getId() == (seciliMarkaTablo != null ? seciliMarkaTablo.getId() : -1)).findFirst().orElse(null));
         if (tblMarkalar.getSelectionModel().getSelectedItem() == null) tblMarkalar.getSelectionModel().clearSelection();
 
 
-        // Tip seçimini geri yükle
         tblTipler.getSelectionModel().select(tipList.stream().filter(t -> t.getId() == (seciliTipTablo != null ? seciliTipTablo.getId() : -1)).findFirst().orElse(null));
          if (tblTipler.getSelectionModel().getSelectedItem() == null) tblTipler.getSelectionModel().clearSelection();
 
 
-        // Model tablosunu, filtredeki seçime göre yenile (seçimi koruyarak)
-        Marka mevcutMarkaFiltre = cmbModelMarkaFilter.getValue(); // Güncel filtre seçimini al
+        Marka mevcutMarkaFiltre = cmbModelMarkaFilter.getValue();
         Integer markaId = mevcutMarkaFiltre != null ? mevcutMarkaFiltre.getId() : null;
         modelList.clear();
         if (markaId != null && markaId > 0) {
             modelList.setAll(modelDAO.getModellerByMarkaId(markaId));
         }
-         // Model seçimini geri yükle
         if (seciliModelTablo != null) {
              tblModeller.getSelectionModel().select(modelList.stream().filter(m -> m.getId() == seciliModelTablo.getId()).findFirst().orElse(null));
         }
          if (tblModeller.getSelectionModel().getSelectedItem() == null) tblModeller.getSelectionModel().clearSelection();
 
 
-        // Buton durumlarını güncelle
         updateButtonStates();
         System.out.println("KategoriView verileri yenilendi.");
     }

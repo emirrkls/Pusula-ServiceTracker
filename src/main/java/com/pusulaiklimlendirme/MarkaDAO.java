@@ -8,23 +8,14 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Marka nesneleri için Veritabanı Erişim Nesnesi (DAO).
- * Markalar tablosu üzerinde CRUD (Create, Read, Update, Delete) işlemleri yapar.
- */
 public class MarkaDAO {
 
-    /**
-     * Veritabanındaki tüm markaları isim sırasına göre listeler.
-     *
-     * @return Marka nesnelerinin bir listesi. Hata durumunda veya marka yoksa boş liste döner.
-     */
+    /** ... @return A list of Marka objects. 
+     * Returns an empty list on error or if no brands exist. */
     public List<Marka> getAllMarkalar() {
         List<Marka> markalar = new ArrayList<>();
-        // SQL sorgusu - İsim sırasına göre (ASC) getirmek daha mantıklı
         String sql = "SELECT id, ad FROM markalar ORDER BY ad ASC";
 
-        // try-with-resources ile Connection ve Statement otomatik kapanır
         try (Connection conn = DatabaseManager.getConnection();
              Statement stmt = conn.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {

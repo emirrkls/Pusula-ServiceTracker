@@ -2,7 +2,7 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <!-- Proje Kimlik Bilgileri -->
+    <!-- Project Coordinates -->
     <groupId>com.pusulaiklimlendirme</groupId>
     <artifactId>servis-app</artifactId>
     <version>1.0.0</version>
@@ -23,7 +23,7 @@
         <slf4j.version>2.0.13</slf4j.version>
     </properties>
 
-    <!-- Bağımlılıklar -->
+    <!-- Dependencies -->
     <dependencies>
         <dependency>
             <groupId>org.openjfx</groupId>
@@ -47,7 +47,7 @@
         </dependency>
     </dependencies>
 
-    <!-- Build Ayarları -->
+    <!-- Build Settings -->
     <build>
         <plugins>
             <plugin>
@@ -73,7 +73,6 @@
                          </goals>
                          <phase>package</phase>
                          <configuration>
-                             <!-- <launcher>${app.name}</launcher> --> <!-- Yorumlu -->
                              <jlinkImageName>${jlink.image.name}</jlinkImageName>
                              <jlinkZipName>${jlink.image.name}-zip</jlinkZipName>
                              <noHeaderFiles>true</noHeaderFiles>
@@ -85,7 +84,7 @@
                                  <module>java.sql</module>
                                  <module>javafx.controls</module>
                                  <module>javafx.fxml</module>
-                                 <module>${project.module.name}</module> <!-- module-info.java varsa -->
+                                 <module>${project.module.name}</module> <!-- If module-info.java exists -->
                                  <module>org.slf4j</module>
                              </addModules>
                              <bindServices>true</bindServices>
@@ -110,16 +109,15 @@
                             <vendor>Pusula Iklimlendirme</vendor>
                             <destination>target/dist</destination>
                             <runtimeImage>target/${jlink.image.name}</runtimeImage>
-                            <!-- TYPE BÜYÜK HARF OLARAK DÜZELTİLDİ -->
                             <type>EXE</type>
                             <launcher>${app.name}</launcher>
                             <mainClass>${main.class}</mainClass>
-                            <module>${project.module.name}/${main.class}</module> <!-- module-info.java varsa -->
-                            <!-- Windows Ayarları -->
+                            <module>${project.module.name}/${main.class}</module> <!-- If module-info.java exists -->
+                            <!-- Windows Settings -->
                             <winMenu>true</winMenu>
                             <winShortcut>true</winShortcut>
                             <winDirChooser>true</winDirChooser>
-                            <winUpgradeUuid>79d85b3f-1079-4244-a6f2-32a1b179951b</winUpgradeUuid> <!-- Kendi UUID'niz -->
+                            <winUpgradeUuid>79d85b3f-1079-4244-a6f2-32a1b179951b</winUpgradeUuid> <!-- Your own UUID -->
                             <icon>src/main/resources/icons/app.ico</icon>
                         </configuration>
                     </execution>
